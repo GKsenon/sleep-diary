@@ -1,0 +1,11 @@
+<resources>
+    <string name="app_name">Sleep Diary</string>
+    <string name="add_content_description">Add sleep description</string>
+    <string name="start_time">Start:</string>
+    <string name="end_time">End:</string>
+    <string name="select_start_date">Select start date</string>
+    <string name="select_start_time">Select start time</string>
+    <string name="select_end_date">Select end date</string>
+    <string name="select_end_time">Select end time</string>
+    <string name="save_sleep">Save</string>
+</resources>
