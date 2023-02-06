@@ -8,7 +8,7 @@ import androidx.room.Query
 @Dao
 interface SleepDao {
 
-    @Query("SELECT * FROM sleep")
+    @Query("SELECT * FROM sleep ORDER BY start")
     fun getSleepDiary(): LiveData<List<Sleep>>
 
     @Insert
