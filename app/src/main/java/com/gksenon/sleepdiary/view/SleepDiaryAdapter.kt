@@ -9,9 +9,11 @@ import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.gksenon.sleepdiary.R
 import com.gksenon.sleepdiary.data.Sleep
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 
-class SleepDiaryAdapter : ListAdapter<Sleep, SleepDiaryAdapter.DiaryViewHolder>(SleepDiaryDiffCallback) {
+class SleepDiaryAdapter :
+    ListAdapter<Sleep, SleepDiaryAdapter.DiaryViewHolder>(SleepDiaryDiffCallback) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): DiaryViewHolder {
         val view =
@@ -25,13 +27,15 @@ class SleepDiaryAdapter : ListAdapter<Sleep, SleepDiaryAdapter.DiaryViewHolder>(
     }
 
     class DiaryViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val start: TextView = view.findViewById(R.id.start)
-        private val end: TextView = view.findViewById(R.id.end)
+        private val timeRangeTextView: TextView = view.findViewById(R.id.time_range)
 
         fun bind(sleep: Sleep) {
-            val dateFormat = SimpleDateFormat.getDateTimeInstance()
-            start.text = dateFormat.format(sleep.start)
-            end.text = dateFormat.format(sleep.end)
+            val dateFormat =
+                SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT)
+            val start = dateFormat.format(sleep.start)
+            val end = dateFormat.format(sleep.end)
+            timeRangeTextView.text =
+                timeRangeTextView.context.getString(R.string.sleep_time_range, start, end)
         }
     }
 }

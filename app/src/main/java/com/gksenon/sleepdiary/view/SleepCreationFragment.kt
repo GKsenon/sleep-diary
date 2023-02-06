@@ -26,7 +26,7 @@ class SleepCreationFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val view = inflater.inflate(R.layout.fragment_manual_sleep_creation, container, false)
+        val view = inflater.inflate(R.layout.fragment_sleep_creation, container, false)
 
         val startDateView: TextView = view.findViewById(R.id.start_date)
         val endDateView: TextView = view.findViewById(R.id.end_date)
