@@ -16,64 +16,82 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             app:menu="@menu/manual_sleep_creation"
-            app:title="@string/app_name" />
+            app:title="@string/add_sleep" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
     <TextView
-        android:id="@+id/start_label"
-        android:layout_width="wrap_content"
+        android:id="@+id/start_date_time_label"
+        style="@style/Theme.SleepDiary.DateTimeTextView"
+        android:textSize="18sp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:text="@string/start_time"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/start_date_time"
         app:layout_constraintTop_toBottomOf="@id/app_bar" />
 
     <TextView
         android:id="@+id/start_date"
+        style="@style/Theme.SleepDiary.DateTimeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-        app:layout_constraintStart_toEndOf="@id/start_label"
-        app:layout_constraintTop_toBottomOf="@id/app_bar" />
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/start_date_time_label" />
 
     <TextView
         android:id="@+id/start_time"
+        style="@style/Theme.SleepDiary.DateTimeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-        app:layout_constraintStart_toEndOf="@id/start_date"
-        app:layout_constraintTop_toBottomOf="@id/app_bar" />
+        android:paddingStart="8dp"
+        android:paddingTop="16dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/start_date_time_label" />
 
     <TextView
-        android:id="@+id/end_label"
-        android:layout_width="wrap_content"
+        android:id="@+id/end_date_time_label"
+        style="@style/Theme.SleepDiary.DateTimeTextView"
+        android:textSize="18sp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:text="@string/end_time"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/start_label" />
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginBottom="8dp"
+        android:text="@string/end_date_time"
+        app:layout_constraintTop_toBottomOf="@id/start_date" />
 
     <TextView
         android:id="@+id/end_date"
+        style="@style/Theme.SleepDiary.DateTimeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-        app:layout_constraintStart_toEndOf="@id/end_label"
-        app:layout_constraintTop_toBottomOf="@id/start_label" />
+        android:paddingStart="16dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="8dp"
+        android:paddingBottom="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/end_date_time_label" />
 
     <TextView
         android:id="@+id/end_time"
+        style="@style/Theme.SleepDiary.DateTimeTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:padding="8dp"
-        android:textAppearance="@style/TextAppearance.MaterialComponents.Body1"
-        app:layout_constraintStart_toEndOf="@id/end_date"
-        app:layout_constraintTop_toBottomOf="@id/start_label" />
+        android:paddingStart="8dp"
+        android:paddingTop="8dp"
+        android:paddingEnd="16dp"
+        android:paddingBottom="16dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/end_date_time_label" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
