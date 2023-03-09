@@ -10,6 +10,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.gksenon.sleepdiary.R
+import com.gksenon.sleepdiary.view.utils.HeaderItemDecoration
 import com.gksenon.sleepdiary.viewmodels.SleepDiaryViewModel
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import dagger.hilt.android.AndroidEntryPoint
@@ -28,8 +29,9 @@ class SleepDiaryFragment : Fragment() {
         val view = inflater.inflate(R.layout.fragment_sleep_diary, container, false)
 
         val sleepDiaryView: RecyclerView = view.findViewById(R.id.sleep_diary)
-        sleepDiaryView.layoutManager = LinearLayoutManager(context)
+        sleepDiaryView.layoutManager = LinearLayoutManager(requireContext())
         sleepDiaryView.adapter = sleepDiaryAdapter
+        sleepDiaryView.addItemDecoration(HeaderItemDecoration(requireContext()))
 
         viewModel.sleepDiary.observe(viewLifecycleOwner) { sleepDiary ->
             sleepDiaryAdapter.submitList(sleepDiary)
