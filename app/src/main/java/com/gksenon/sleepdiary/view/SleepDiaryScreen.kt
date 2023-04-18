@@ -22,7 +22,7 @@ import java.text.SimpleDateFormat
 @Composable
 fun SleepDiaryScreen(
     viewModel: SleepDiaryViewModel = hiltViewModel(),
-    onNavigateToSleepCreation: () -> Unit,
+    onNavigateToSleepEditor: () -> Unit,
     onNavigateToSleepTracking: () -> Unit
 ) {
     Scaffold(topBar = {
@@ -31,7 +31,7 @@ fun SleepDiaryScreen(
         })
     },
     floatingActionButton = {
-        FloatingActionButton(onClick = { onNavigateToSleepCreation() }) {
+        FloatingActionButton(onClick = { onNavigateToSleepEditor() }) {
             Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_sleep))
         }
 //        FloatingActionButton(onClick = { onNavigateToSleepTracking() }) {

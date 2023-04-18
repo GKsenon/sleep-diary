@@ -7,5 +7,9 @@
     <string name="start_time">Start time</string>
     <string name="end_date">End date</string>
     <string name="end_time">End time</string>
+    <string name="date_supporting_text">dd/MM/yyyy</string>
+    <string name="time_supporting_text">hh:mm</string>
+    <string name="date_error">Invalid date format, must be \"dd/MM/yyyy\"</string>
+    <string name="time_error">Invalid time format, must be \"hh:mm\"</string>
     <string name="save_sleep">Save</string>
 </resources>

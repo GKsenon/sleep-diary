@@ -8,8 +8,8 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.gksenon.sleepdiary.view.SleepCreationScreen
 import com.gksenon.sleepdiary.view.SleepDiaryScreen
+import com.gksenon.sleepdiary.view.SleepEditorScreen
 import com.gksenon.sleepdiary.view.SleepTrackingScreen
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -31,13 +31,11 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
     NavHost(navController, startDestination = "sleep_diary") {
         composable("sleep_diary") {
             SleepDiaryScreen(
-                onNavigateToSleepCreation = { navController.navigate("sleep_creation") },
+                onNavigateToSleepEditor = { navController.navigate("sleep_editor") },
                 onNavigateToSleepTracking = { navController.navigate("sleep_tracking") })
         }
-        composable("sleep_creation") {
-            SleepCreationScreen(
-                onSleepSaved = { navController.popBackStack() }
-            )
+        composable("sleep_editor") {
+            SleepEditorScreen(onSaveSleep = { navController.popBackStack() })
         }
         composable("sleep_tracking") {
             SleepTrackingScreen()
