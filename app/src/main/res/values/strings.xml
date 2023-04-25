@@ -12,4 +12,7 @@
     <string name="date_error">Invalid date format, must be \"dd/MM/yyyy\"</string>
     <string name="time_error">Invalid time format, must be \"hh:mm\"</string>
     <string name="save_sleep">Save</string>
+    <string name="track_sleep_button_text">Track</string>
+    <string name="start_tracking">Start tracking</string>
+    <string name="stop_tracking">Stop tracking</string>
 </resources>

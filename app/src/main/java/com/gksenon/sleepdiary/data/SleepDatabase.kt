@@ -6,6 +6,6 @@ import androidx.room.TypeConverters
 
 @Database(entities = [Sleep::class], version = 1)
 @TypeConverters(TimeConverter::class)
-abstract class SleepDiaryDatabase : RoomDatabase() {
+abstract class SleepDatabase : RoomDatabase() {
     abstract fun sleepDao(): SleepDao
 }

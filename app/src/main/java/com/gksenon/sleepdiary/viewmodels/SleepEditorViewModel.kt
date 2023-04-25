@@ -3,7 +3,7 @@ package com.gksenon.sleepdiary.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gksenon.sleepdiary.data.Sleep
-import com.gksenon.sleepdiary.data.SleepDiaryRepository
+import com.gksenon.sleepdiary.data.SleepRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,7 +16,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class SleepEditorViewModel @Inject constructor(
-    private val sleepDiaryRepository: SleepDiaryRepository
+    private val sleepRepository: SleepRepository
 ) : ViewModel() {
 
     private val dateFormatter = SimpleDateFormat("ddMMyyyy", Locale.getDefault())
@@ -85,7 +85,7 @@ class SleepEditorViewModel @Inject constructor(
                     start = merge(startDate, startTime),
                     end = merge(endDate, endTime)
                 )
-                sleepDiaryRepository.saveSleep(sleep)
+                sleepRepository.saveSleep(sleep)
             }
             onSaveSleep()
         } else {

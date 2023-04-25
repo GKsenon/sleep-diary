@@ -1,14 +1,18 @@
 package com.gksenon.sleepdiary.view
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -30,14 +34,29 @@ fun SleepDiaryScreen(
             Text(stringResource(R.string.app_name))
         })
     },
-    floatingActionButton = {
-        FloatingActionButton(onClick = { onNavigateToSleepEditor() }) {
-            Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_sleep))
-        }
-//        FloatingActionButton(onClick = { onNavigateToSleepTracking() }) {
-//            Icon(Icons.Filled.PlayArrow, contentDescription = stringResource(R.string.track_sleep))
-//        }
-    }) { contentPadding ->
+        floatingActionButton = {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.End
+            ) {
+                SmallFloatingActionButton(
+                    onClick = { onNavigateToSleepEditor() },
+                    containerColor = MaterialTheme.colorScheme.tertiaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                ) {
+                    Icon(Icons.Filled.Add, contentDescription = stringResource(R.string.add_sleep))
+                }
+                ExtendedFloatingActionButton(
+                    text = { Text(text = stringResource(R.string.track_sleep_button_text)) },
+                    icon = {
+                        Icon(
+                            Icons.Filled.PlayArrow,
+                            contentDescription = stringResource(R.string.track_sleep)
+                        )
+                    },
+                    onClick = { onNavigateToSleepTracking() })
+            }
+        }) { contentPadding ->
         val sleepDiary: List<Sleep>? by viewModel.sleepDiary.observeAsState()
 
         LazyColumn(
@@ -48,9 +67,12 @@ fun SleepDiaryScreen(
                 bottom = contentPadding.calculateBottomPadding()
             )
         ) {
-            items(items = sleepDiary ?: emptyList(), key = { sleep -> sleep.id }, itemContent = { sleep ->
-                SleepDiaryEntry(sleep)
-            })
+            items(
+                items = sleepDiary ?: emptyList(),
+                key = { sleep -> sleep.id },
+                itemContent = { sleep ->
+                    SleepDiaryEntry(sleep)
+                })
         }
     }
 }

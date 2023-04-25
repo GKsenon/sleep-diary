@@ -3,8 +3,8 @@ package com.gksenon.sleepdiary.di
 import android.content.Context
 import androidx.room.Room
 import com.gksenon.sleepdiary.data.SleepDao
-import com.gksenon.sleepdiary.data.SleepDiaryDatabase
-import com.gksenon.sleepdiary.data.SleepDiaryRepository
+import com.gksenon.sleepdiary.data.SleepDatabase
+import com.gksenon.sleepdiary.data.SleepRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -18,13 +18,13 @@ class DataModule {
 
     @Singleton
     @Provides
-    fun provideSleepDatabase(@ApplicationContext context: Context): SleepDiaryDatabase =
-        Room.databaseBuilder(context, SleepDiaryDatabase::class.java, "diary").build()
+    fun provideSleepDatabase(@ApplicationContext context: Context): SleepDatabase =
+        Room.databaseBuilder(context, SleepDatabase::class.java, "diary").build()
 
     @Provides
-    fun provideSleepDao(database: SleepDiaryDatabase): SleepDao = database.sleepDao()
+    fun provideSleepDao(database: SleepDatabase): SleepDao = database.sleepDao()
 
     @Provides
-    fun providesSleepDiaryRepository(sleepDao: SleepDao): SleepDiaryRepository =
-        SleepDiaryRepository(sleepDao)
+    fun providesSleepDiaryRepository(@ApplicationContext context: Context, sleepDao: SleepDao): SleepRepository =
+        SleepRepository(context, sleepDao)
 }
