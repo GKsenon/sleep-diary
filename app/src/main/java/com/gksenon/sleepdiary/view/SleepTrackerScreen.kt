@@ -8,10 +8,15 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.outlined.Check
+import androidx.compose.material.icons.outlined.Edit
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -22,13 +27,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gksenon.sleepdiary.R
+import com.gksenon.sleepdiary.view.utils.DateVisualTransformation
+import com.gksenon.sleepdiary.view.utils.TimeVisualTransformation
 import com.gksenon.sleepdiary.viewmodels.SleepTrackerViewModel
 import com.gksenon.sleepdiary.viewmodels.TrackerState
-import kotlin.time.Duration
 
 @Composable
 fun SleepTrackerScreen(
@@ -47,53 +54,163 @@ fun SleepTrackerScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             when (state) {
-                is TrackerState.Stopped -> StoppedScreen { viewModel.startTracking() }
-                is TrackerState.Tracking -> TrackingScreen(duration = (state as TrackerState.Tracking).duration) { viewModel.stopTracking() }
-            }
-        }
-    }
-}
-
-@Composable
-fun StoppedScreen(onClick: () -> Unit) {
-    ElevatedButton(
-        onClick = onClick,
-        modifier = Modifier
-            .width(180.dp)
-            .height(180.dp)
-    ) {
-        Icon(
-            imageVector = Icons.Filled.PlayArrow,
-            contentDescription = stringResource(R.string.start_tracking),
-            modifier = Modifier.size(64.dp)
-        )
-    }
-}
-
-@Composable
-fun TrackingScreen(duration: Duration, onClick: () -> Unit) {
-    Column(
-        verticalArrangement = Arrangement.spacedBy(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Row {
-            duration.toComponents { hours, minutes, seconds, _ ->
-                Text(
-                    text = "%02d : %02d : %02d".format(hours, minutes, seconds),
-                    fontSize = 48.sp
+                is TrackerState.Stopped -> StoppedScreen(onStart = { viewModel.startTracking() })
+                is TrackerState.Tracking -> TrackingScreen(
+                    state = state as TrackerState.Tracking,
+                    onStop = { viewModel.stopTracking() },
+                    onEditStartDate = { viewModel.editStartDate() },
+                    onStartDateChanged = { viewModel.onStartDateChanged(it) },
+                    onSaveStartDate = { viewModel.saveStartDate() },
+                    onEditStartTime = { viewModel.editStartTime() },
+                    onStartTimeChanged = { viewModel.onStartTimeChanged(it) },
+                    onSaveStartTime = { viewModel.saveStartTime() }
                 )
             }
         }
-        ElevatedButton(
-            onClick = onClick,
-            modifier = Modifier
-                .width(180.dp)
-                .height(180.dp)
-        ) {
+    }
+}
+
+@Composable
+fun StoppedScreen(onStart: () -> Unit) {
+    ElevatedButton(
+        onClick = onStart,
+        modifier = Modifier
+            .width(160.dp)
+            .height(160.dp)
+    ) {
+        Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Icon(
-                painter = painterResource(R.drawable.ic_stop),
-                contentDescription = stringResource(R.string.stop_tracking),
+                imageVector = Icons.Filled.PlayArrow,
+                contentDescription = stringResource(R.string.start_tracking),
                 modifier = Modifier.size(64.dp)
+            )
+            Text(text = stringResource(R.string.start_tracking))
+        }
+    }
+}
+
+@Composable
+fun TrackingScreen(
+    state: TrackerState.Tracking,
+    onStop: () -> Unit,
+    onEditStartDate: () -> Unit,
+    onStartDateChanged: (String) -> Unit,
+    onSaveStartDate: () -> Unit,
+    onEditStartTime: () -> Unit,
+    onStartTimeChanged: (String) -> Unit,
+    onSaveStartTime: () -> Unit
+) {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(32.dp),
+        horizontalAlignment = Alignment.CenterHorizontally,
+        modifier = Modifier.padding(16.dp)
+    ) {
+        state.duration.toComponents { hours, minutes, seconds, _ ->
+            Text(
+                text = "%02d : %02d : %02d".format(hours, minutes, seconds),
+                fontSize = 32.sp
+            )
+        }
+        ElevatedButton(
+            onClick = onStop,
+            modifier = Modifier
+                .width(160.dp)
+                .height(160.dp)
+        ) {
+            Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                Icon(
+                    painter = painterResource(R.drawable.ic_stop),
+                    contentDescription = stringResource(R.string.stop_tracking),
+                    modifier = Modifier.size(64.dp)
+                )
+                Text(text = stringResource(R.string.stop_tracking), fontSize = 18.sp)
+            }
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            OutlinedTextField(
+                value = state.formattedStartDate,
+                onValueChange = onStartDateChanged,
+                enabled = state.isStartDateEditingEnabled,
+                label = { Text(stringResource(R.string.start_date)) },
+                supportingText = {
+                    if (state.showStartDateInFutureError) {
+                        Text(stringResource(R.string.date_in_future_error))
+                    } else if (state.showStartDateInvalidFormatError)
+                        Text(stringResource(R.string.date_invalid_format_error))
+                    else
+                        Text(stringResource(R.string.date_supporting_text))
+                },
+                trailingIcon = {
+                    if (state.showStartDateInvalidFormatError) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_error),
+                            contentDescription = stringResource(R.string.save_start_date),
+                            modifier = Modifier.size(24.dp)
+                        )
+                    } else if (state.isStartDateEditingEnabled) {
+                        IconButton(onClick = onSaveStartDate) {
+                            Icon(
+                                imageVector = Icons.Outlined.Check,
+                                contentDescription = stringResource(R.string.save_start_date)
+                            )
+                        }
+                    } else {
+                        IconButton(onClick = onEditStartDate) {
+                            Icon(
+                                imageVector = Icons.Outlined.Edit,
+                                contentDescription = stringResource(R.string.edit_start_date)
+                            )
+                        }
+                    }
+                },
+                isError = state.showStartDateInFutureError || state.showStartDateInvalidFormatError,
+                visualTransformation = DateVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.weight(1f)
+            )
+            OutlinedTextField(
+                value = state.formattedStartTime,
+                onValueChange = onStartTimeChanged,
+                enabled = state.isStartTimeEditingEnabled,
+                label = { Text(stringResource(R.string.start_time)) },
+                supportingText = {
+                    if (state.showStartTimeInFutureError) {
+                        Text(stringResource(R.string.time_in_future_error))
+                    } else if (state.showStartTimeInvalidFormatError)
+                        Text(stringResource(R.string.time_invalid_format_error))
+                    else
+                        Text(stringResource(R.string.time_supporting_text))
+                },
+                trailingIcon = {
+                    if (state.showStartTimeInvalidFormatError) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.ic_error),
+                            contentDescription = stringResource(R.string.save_start_date),
+                            modifier = Modifier.size(24.dp)
+                        )
+                    } else if (state.isStartTimeEditingEnabled) {
+                        IconButton(onClick = onSaveStartTime) {
+                            Icon(
+                                imageVector = Icons.Outlined.Check,
+                                contentDescription = stringResource(R.string.save_start_date)
+                            )
+                        }
+                    } else {
+                        IconButton(onClick = onEditStartTime) {
+                            Icon(
+                                imageVector = Icons.Outlined.Edit,
+                                contentDescription = stringResource(R.string.save_start_time)
+                            )
+                        }
+                    }
+                },
+                isError = state.showStartTimeInFutureError || state.showStartTimeInvalidFormatError,
+                visualTransformation = TimeVisualTransformation(),
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                modifier = Modifier.weight(1f)
             )
         }
     }

@@ -48,6 +48,12 @@ class SleepRepository(private val context: Context, private val sleepDao: SleepD
         }
     }
 
+    suspend fun updateTrackerStart(start: Date) {
+        context.dataStore.edit { trackerData ->
+            trackerData[startTimestampKey] = start.time
+        }
+    }
+
     sealed class TrackerEvent {
         data class Started(val start: Date) : TrackerEvent()
 

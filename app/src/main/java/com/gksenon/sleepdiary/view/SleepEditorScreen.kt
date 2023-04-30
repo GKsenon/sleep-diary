@@ -53,7 +53,7 @@ fun SleepEditorScreen(
                     label = { Text(stringResource(R.string.start_date)) },
                     supportingText = {
                         if (state.showStartDateError)
-                            Text(stringResource(R.string.date_error))
+                            Text(stringResource(R.string.date_invalid_format_error))
                         else
                             Text(stringResource(R.string.date_supporting_text))
                     },
@@ -69,7 +69,7 @@ fun SleepEditorScreen(
                     label = { Text(stringResource(R.string.start_time)) },
                     supportingText = {
                         if (state.showStartTimeError)
-                            Text(stringResource(R.string.time_error))
+                            Text(stringResource(R.string.time_invalid_format_error))
                         else
                             Text(stringResource(R.string.time_supporting_text))
                     },
@@ -87,7 +87,7 @@ fun SleepEditorScreen(
                     label = { Text(stringResource(R.string.end_date)) },
                     supportingText = {
                         if (state.showEndDateError)
-                            Text(stringResource(R.string.date_error))
+                            Text(stringResource(R.string.date_invalid_format_error))
                         else
                             Text(stringResource(R.string.date_supporting_text))
                     },
@@ -103,7 +103,7 @@ fun SleepEditorScreen(
                     label = { Text(stringResource(R.string.end_time)) },
                     supportingText = {
                         if (state.showEndTimeError)
-                            Text(stringResource(R.string.time_error))
+                            Text(stringResource(R.string.time_invalid_format_error))
                         else
                             Text(stringResource(R.string.time_supporting_text))
                     },
