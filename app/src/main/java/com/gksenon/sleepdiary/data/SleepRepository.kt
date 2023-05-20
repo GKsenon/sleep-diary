@@ -17,6 +17,8 @@ class SleepRepository(private val context: Context, private val sleepDao: SleepD
 
     private val startTimestampKey = longPreferencesKey(name = "start_timestamp")
 
+    fun getSleepDiary(): Flow<List<Sleep>> = sleepDao.getSleepDiary()
+
     suspend fun saveSleep(sleep: Sleep) = withContext(Dispatchers.IO) { sleepDao.saveSleep(sleep) }
 
     suspend fun startTracking() {
