@@ -7,7 +7,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material3.*
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -20,6 +25,7 @@ import com.gksenon.sleepdiary.R
 import com.gksenon.sleepdiary.view.utils.DateVisualTransformation
 import com.gksenon.sleepdiary.view.utils.TimeVisualTransformation
 import com.gksenon.sleepdiary.viewmodels.SleepEditorViewModel
+import com.gksenon.sleepdiary.viewmodels.ValidationStatus
 
 @Composable
 fun SleepEditorScreen(
@@ -48,32 +54,34 @@ fun SleepEditorScreen(
         ) {
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
-                    value = state.startDate,
+                    value = state.startDateTextFieldState.value,
                     onValueChange = { viewModel.onStartDateChanged(it) },
                     label = { Text(stringResource(R.string.start_date)) },
                     supportingText = {
-                        if (state.showStartDateError)
-                            Text(stringResource(R.string.date_invalid_format_error))
-                        else
-                            Text(stringResource(R.string.date_supporting_text))
+                        when (state.startDateTextFieldState.validationStatus) {
+                            ValidationStatus.VALID -> Text(stringResource(R.string.date_supporting_text))
+                            ValidationStatus.INVALID_FORMAT -> Text(stringResource(R.string.date_invalid_format_error))
+                            ValidationStatus.VALUE_IN_FUTURE -> Text(stringResource(R.string.date_in_future_error))
+                        }
                     },
-                    isError = state.showStartDateError,
+                    isError = state.startDateTextFieldState.validationStatus != ValidationStatus.VALID,
                     singleLine = true,
                     visualTransformation = DateVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.weight(1f)
                 )
                 OutlinedTextField(
-                    value = state.startTime,
+                    value = state.startTimeTextFieldState.value,
                     onValueChange = { viewModel.onStartTimeChanged(it) },
                     label = { Text(stringResource(R.string.start_time)) },
                     supportingText = {
-                        if (state.showStartTimeError)
-                            Text(stringResource(R.string.time_invalid_format_error))
-                        else
-                            Text(stringResource(R.string.time_supporting_text))
+                        when (state.startTimeTextFieldState.validationStatus) {
+                            ValidationStatus.VALID -> Text(stringResource(R.string.time_supporting_text))
+                            ValidationStatus.INVALID_FORMAT -> Text(stringResource(R.string.time_invalid_format_error))
+                            ValidationStatus.VALUE_IN_FUTURE -> Text(stringResource(R.string.time_in_future_error))
+                        }
                     },
-                    isError = state.showStartTimeError,
+                    isError = state.startTimeTextFieldState.validationStatus != ValidationStatus.VALID,
                     singleLine = true,
                     visualTransformation = TimeVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
@@ -82,32 +90,34 @@ fun SleepEditorScreen(
             }
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedTextField(
-                    value = state.endDate,
+                    value = state.endDateTextFieldState.value,
                     onValueChange = { viewModel.onEndDateChanged(it) },
                     label = { Text(stringResource(R.string.end_date)) },
                     supportingText = {
-                        if (state.showEndDateError)
-                            Text(stringResource(R.string.date_invalid_format_error))
-                        else
-                            Text(stringResource(R.string.date_supporting_text))
+                        when (state.endDateTextFieldState.validationStatus) {
+                            ValidationStatus.VALID -> Text(stringResource(R.string.date_supporting_text))
+                            ValidationStatus.INVALID_FORMAT -> Text(stringResource(R.string.date_invalid_format_error))
+                            ValidationStatus.VALUE_IN_FUTURE -> Text(stringResource(R.string.date_in_future_error))
+                        }
                     },
-                    isError = state.showEndDateError,
+                    isError = state.endDateTextFieldState.validationStatus != ValidationStatus.VALID,
                     singleLine = true,
                     visualTransformation = DateVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
                     modifier = Modifier.weight(1f)
                 )
                 OutlinedTextField(
-                    value = state.endTime,
+                    value = state.endTimeTextFieldState.value,
                     onValueChange = { viewModel.onEndTimeChanged(it) },
                     label = { Text(stringResource(R.string.end_time)) },
                     supportingText = {
-                        if (state.showEndTimeError)
-                            Text(stringResource(R.string.time_invalid_format_error))
-                        else
-                            Text(stringResource(R.string.time_supporting_text))
+                        when (state.endTimeTextFieldState.validationStatus) {
+                            ValidationStatus.VALID -> Text(stringResource(R.string.time_supporting_text))
+                            ValidationStatus.INVALID_FORMAT -> Text(stringResource(R.string.time_invalid_format_error))
+                            ValidationStatus.VALUE_IN_FUTURE -> Text(stringResource(R.string.time_in_future_error))
+                        }
                     },
-                    isError = state.showEndTimeError,
+                    isError = state.endTimeTextFieldState.validationStatus != ValidationStatus.VALID,
                     singleLine = true,
                     visualTransformation = TimeVisualTransformation(),
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),

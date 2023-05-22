@@ -13,10 +13,10 @@
     <string name="time_supporting_text">hh:mm</string>
     <string name="date_invalid_format_error">Неправильный формат даты, должен быть \"dd/MM/yyyy\"</string>
     <string name="time_invalid_format_error">Неправильный формат времени, должен быть \"hh:mm\"</string>
-    <string name="date_in_future_error">Выбранная дата с будущем</string>
+    <string name="date_in_future_error">Выбранная дата в будущем</string>
     <string name="time_in_future_error">Выбранное время в будущем</string>
     <string name="save_sleep">Сохранить</string>
-    <string name="track_sleep_button_text">Отследить</string>
+    <string name="track_sleep_button_text">Трекер</string>
     <string name="start_tracking">Старт</string>
     <string name="stop_tracking">Стоп</string>
     <string name="edit_start_date">Редактировать дату начала</string>
