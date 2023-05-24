@@ -28,16 +28,21 @@ class MainActivity : ComponentActivity() {
 
 @Composable
 fun MainScreen(navController: NavHostController = rememberNavController()) {
-    NavHost(navController, startDestination = "sleep_diary") {
-        composable("sleep_diary") {
+    NavHost(navController, startDestination = "sleepDiary") {
+        composable("sleepDiary") {
             SleepDiaryScreen(
-                onNavigateToSleepEditor = { navController.navigate("sleep_editor") },
-                onNavigateToSleepTracking = { navController.navigate("sleep_tracker") })
+                onNavigateToSleepEditor = { navController.navigate("sleepEditor") },
+                onNavigateToSleepTracking = { navController.navigate("sleepTracker") },
+                onSleepClicked = { navController.navigate("sleepEditor/$it") }
+            )
         }
-        composable("sleep_editor") {
+        composable("sleepEditor") {
             SleepEditorScreen(onSaveSleep = { navController.popBackStack() })
         }
-        composable("sleep_tracker") {
+        composable("sleepEditor/{sleepId}") {
+            SleepEditorScreen(onSaveSleep = { navController.popBackStack() })
+        }
+        composable("sleepTracker") {
             SleepTrackerScreen()
         }
     }

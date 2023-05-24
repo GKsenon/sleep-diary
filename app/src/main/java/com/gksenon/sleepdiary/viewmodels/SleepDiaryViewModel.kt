@@ -33,6 +33,10 @@ class SleepDiaryViewModel @Inject constructor(sleepRepository: SleepRepository) 
                     SleepState(sleep.id, sleep.start, sleep.end, sleepDuration, wakeDuration)
                 }.groupBy { dateFormat.format(it.start) }
         }
+
+    fun onSleepClicked(sleepId: UUID) {
+
+    }
 }
 
 data class SleepState(

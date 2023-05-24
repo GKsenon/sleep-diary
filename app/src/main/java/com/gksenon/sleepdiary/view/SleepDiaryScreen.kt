@@ -1,11 +1,13 @@
 package com.gksenon.sleepdiary.view
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -36,12 +38,14 @@ import com.gksenon.sleepdiary.viewmodels.SleepDiaryViewModel
 import com.gksenon.sleepdiary.viewmodels.SleepState
 import java.text.SimpleDateFormat
 import java.util.Locale
+import java.util.UUID
 
 @Composable
 fun SleepDiaryScreen(
     viewModel: SleepDiaryViewModel = hiltViewModel(),
     onNavigateToSleepEditor: () -> Unit,
-    onNavigateToSleepTracking: () -> Unit
+    onNavigateToSleepTracking: () -> Unit,
+    onSleepClicked: (UUID) -> Unit
 ) {
     Scaffold(topBar = {
         TopAppBar(title = {
@@ -76,23 +80,23 @@ fun SleepDiaryScreen(
             emptyMap()
         )
 
-        LazyColumn(
-            contentPadding = contentPadding,
-            modifier = Modifier.padding(horizontal = 16.dp)
-        ) {
+        LazyColumn(contentPadding = contentPadding) {
             sleepDiary.forEach { entry ->
                 item {
                     Text(
                         text = entry.key,
                         style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(vertical = 8.dp)
+                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
                     )
                 }
                 items(
                     items = entry.value,
                     key = { sleep -> sleep.id },
                     itemContent = { sleep ->
-                        SleepDiaryEntry(sleep)
+                        SleepDiaryEntry(
+                            sleep = sleep,
+                            onClick = { onSleepClicked(sleep.id) }
+                        )
                     })
             }
         }
@@ -100,16 +104,19 @@ fun SleepDiaryScreen(
 }
 
 @Composable
-fun SleepDiaryEntry(sleep: SleepState) {
+fun SleepDiaryEntry(
+    sleep: SleepState,
+    onClick: () -> Unit
+) {
     val dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
     val start = dateFormat.format(sleep.start)
     val end = dateFormat.format(sleep.end)
 
-    Column(modifier = Modifier.padding(8.dp)) {
+    Column {
         Row(
             modifier = Modifier
                 .height(64.dp)
-                .padding(horizontal = 8.dp),
+                .padding(horizontal = 32.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Box(
@@ -136,7 +143,10 @@ fun SleepDiaryEntry(sleep: SleepState) {
                 sleep.sleepDuration.inWholeMinutes % 60
             ),
             fontSize = 18.sp,
-            modifier = Modifier.padding(vertical = 8.dp)
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
         )
     }
 }

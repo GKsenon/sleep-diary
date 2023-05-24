@@ -1,5 +1,6 @@
 package com.gksenon.sleepdiary.viewmodels
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gksenon.sleepdiary.data.Sleep
@@ -7,15 +8,22 @@ import com.gksenon.sleepdiary.data.SleepRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.text.ParseException
 import java.text.SimpleDateFormat
-import java.util.*
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
+import java.util.UUID
 import javax.inject.Inject
 
 @HiltViewModel
 class SleepEditorViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val sleepRepository: SleepRepository
 ) : ViewModel() {
 
@@ -24,7 +32,7 @@ class SleepEditorViewModel @Inject constructor(
     private val timeFormatter = SimpleDateFormat("HHmm", Locale.getDefault())
         .apply { isLenient = false }
 
-    private var _sleepEditorState = MutableStateFlow(
+    private val _sleepEditorState = MutableStateFlow(
         SleepEditorState(
             startDateTextFieldState = TextFieldState(
                 value = dateFormatter.format(Date()),
@@ -45,6 +53,35 @@ class SleepEditorViewModel @Inject constructor(
         )
     )
     val sleepEditorState = _sleepEditorState.asStateFlow()
+
+    init {
+        val sleepId: String? = savedStateHandle["sleepId"]
+        if (sleepId != null) {
+            sleepRepository.getSleep(UUID.fromString(sleepId)).map { sleep ->
+                SleepEditorState(
+                    sleepId = sleep.id,
+                    startDateTextFieldState = TextFieldState(
+                        value = dateFormatter.format(sleep.start),
+                        validationStatus = ValidationStatus.VALID
+                    ),
+                    startTimeTextFieldState = TextFieldState(
+                        value = timeFormatter.format(sleep.start),
+                        validationStatus = ValidationStatus.VALID
+                    ),
+                    endDateTextFieldState = TextFieldState(
+                        value = dateFormatter.format(sleep.end),
+                        validationStatus = ValidationStatus.VALID
+                    ),
+                    endTimeTextFieldState = TextFieldState(
+                        value = timeFormatter.format(sleep.end),
+                        validationStatus = ValidationStatus.VALID
+                    )
+                )
+            }.onEach { state ->
+                _sleepEditorState.update { state }
+            }.launchIn(viewModelScope)
+        }
+    }
 
     fun onStartDateChanged(value: String) {
         _sleepEditorState.update { currentState ->
@@ -106,7 +143,11 @@ class SleepEditorViewModel @Inject constructor(
 
         val startTimeValidationStatus = when {
             startTime == null -> ValidationStatus.INVALID_FORMAT
-            startDate != null && startDate.before(Date()) && merge(startDate, startTime).after(Date()) -> ValidationStatus.VALUE_IN_FUTURE
+            startDate != null && startDate.before(Date()) && merge(
+                startDate,
+                startTime
+            ).after(Date()) -> ValidationStatus.VALUE_IN_FUTURE
+
             else -> ValidationStatus.VALID
         }
 
@@ -118,17 +159,22 @@ class SleepEditorViewModel @Inject constructor(
 
         val endTimeValidationStatus = when {
             endTime == null -> ValidationStatus.INVALID_FORMAT
-            endDate != null && endDate.before(Date()) && merge(endDate, endTime).after(Date()) -> ValidationStatus.VALUE_IN_FUTURE
+            endDate != null && endDate.before(Date()) && merge(
+                endDate,
+                endTime
+            ).after(Date()) -> ValidationStatus.VALUE_IN_FUTURE
+
             else -> ValidationStatus.VALID
         }
 
-        if(startDateValidationStatus == ValidationStatus.VALID
+        if (startDateValidationStatus == ValidationStatus.VALID
             && startTimeValidationStatus == ValidationStatus.VALID
             && endDateValidationStatus == ValidationStatus.VALID
-            && endTimeValidationStatus == ValidationStatus.VALID) {
+            && endTimeValidationStatus == ValidationStatus.VALID
+        ) {
             viewModelScope.launch {
                 val sleep = Sleep(
-                    id = UUID.randomUUID(),
+                    id = currentState.sleepId ?: UUID.randomUUID(),
                     start = merge(startDate!!, startTime!!),
                     end = merge(endDate!!, endTime!!)
                 )
@@ -169,6 +215,7 @@ class SleepEditorViewModel @Inject constructor(
 }
 
 data class SleepEditorState(
+    val sleepId: UUID? = null,
     val startDateTextFieldState: TextFieldState,
     val startTimeTextFieldState: TextFieldState,
     val endDateTextFieldState: TextFieldState,
