@@ -22,4 +22,7 @@
     <string name="save_start_date">Save start date</string>
     <string name="edit_start_time">Edit start time</string>
     <string name="save_start_time">Save start time</string>
+    <string name="sleep_in_progress">Sleep in progress</string>
+    <string name="tracker_notifications_channel_name">Tracker notifications</string>
+    <string name="tracker_notifications_channel_description">Notifications to manage sleep tracker</string>
 </resources>

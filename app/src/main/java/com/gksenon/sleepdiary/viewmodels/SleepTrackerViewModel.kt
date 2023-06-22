@@ -3,6 +3,7 @@ package com.gksenon.sleepdiary.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.gksenon.sleepdiary.data.SleepRepository
+import com.gksenon.sleepdiary.notifications.SleepTrackerNotificationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -25,7 +26,10 @@ import kotlin.time.Duration.Companion.milliseconds
 import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
-class SleepTrackerViewModel @Inject constructor(private val sleepRepository: SleepRepository) :
+class SleepTrackerViewModel @Inject constructor(
+    private val sleepRepository: SleepRepository,
+    private val notificationManager: SleepTrackerNotificationManager
+) :
     ViewModel() {
 
     private val dateFormatter = SimpleDateFormat("ddMMyyyy", Locale.getDefault())
@@ -191,6 +195,9 @@ class SleepTrackerViewModel @Inject constructor(private val sleepRepository: Sle
                 formattedStartTime = timeFormatter.format(start)
             )
         }
+
+        notificationManager.showNotification(start)
+
         tickerJob?.cancel()
         tickerJob = tickerFlow.onEach {
             _state.update { currentState ->
@@ -207,6 +214,7 @@ class SleepTrackerViewModel @Inject constructor(private val sleepRepository: Sle
     private fun onTrackerStopped() {
         tickerJob?.cancel()
         _state.update { TrackerState.Stopped }
+        notificationManager.hideNotification()
     }
 
     private fun parseDate(date: String): Date? = try {

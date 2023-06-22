@@ -23,4 +23,7 @@
     <string name="save_start_date">Сохранить дату начала</string>
     <string name="edit_start_time">Редактировать время начала</string>
     <string name="save_start_time">Сохранить время начала</string>
+    <string name="sleep_in_progress">Сон в процессе</string>
+    <string name="tracker_notifications_channel_name">Уведомления трекера</string>
+    <string name="tracker_notifications_channel_description">Уведомления для управления трекингом сна</string>
 </resources>

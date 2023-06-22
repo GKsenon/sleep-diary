@@ -2,6 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.gksenon.sleepdiary">
 
+    <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
+
     <application
         android:name=".SleepDiaryApplication"
         android:allowBackup="true"
@@ -12,6 +14,7 @@
         android:theme="@android:style/Theme.Material.NoActionBar">
         <activity
             android:name=".MainActivity"
+            android:clearTaskOnLaunch="true"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -19,6 +22,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <receiver android:name=".notifications.StopSleepTrackerBroadcastReceiver"/>
     </application>
 
 </manifest>

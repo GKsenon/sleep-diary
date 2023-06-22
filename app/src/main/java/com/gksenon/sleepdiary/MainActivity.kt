@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navDeepLink
 import com.gksenon.sleepdiary.view.SleepDiaryScreen
 import com.gksenon.sleepdiary.view.SleepEditorScreen
 import com.gksenon.sleepdiary.view.SleepTrackerScreen
@@ -42,7 +43,7 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
         composable("sleepEditor/{sleepId}") {
             SleepEditorScreen(onSaveSleep = { navController.popBackStack() })
         }
-        composable("sleepTracker") {
+        composable("sleepTracker", deepLinks = listOf(navDeepLink { uriPattern= "https://com.gksenon.sleepdiary/tracker" })) {
             SleepTrackerScreen()
         }
     }
