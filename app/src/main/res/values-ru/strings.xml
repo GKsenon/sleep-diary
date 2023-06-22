@@ -17,8 +17,8 @@
     <string name="time_in_future_error">Выбранное время в будущем</string>
     <string name="save_sleep">Сохранить</string>
     <string name="track_sleep_button_text">Трекер</string>
-    <string name="start_tracking">Старт</string>
-    <string name="stop_tracking">Стоп</string>
+    <string name="start_tracking">СТАРТ</string>
+    <string name="stop_tracking">СТОП</string>
     <string name="edit_start_date">Редактировать дату начала</string>
     <string name="save_start_date">Сохранить дату начала</string>
     <string name="edit_start_time">Редактировать время начала</string>
