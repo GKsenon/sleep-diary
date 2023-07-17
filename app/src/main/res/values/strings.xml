@@ -1,7 +1,8 @@
 <resources>
     <string name="app_name">Sleep Diary</string>
-    <string name="sleep_time_range">%s - %s, %dh %dm asleep</string>
-    <string name="wake_time">%dh %dm awake</string>
+    <string name="awake">Awake %dh %dm</string>
+    <string name="sleep_finished">%s woke up, slept %dh %dm</string>
+    <string name="sleep_started">%s fell asleep</string>
     <string name="add_sleep">Add sleep</string>
     <string name="track_sleep">Track sleep</string>
     <string name="start_date">Start date</string>

@@ -5,14 +5,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.PlayArrow
@@ -20,6 +18,7 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Shapes
 import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -28,14 +27,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gksenon.sleepdiary.R
+import com.gksenon.sleepdiary.viewmodels.Day
+import com.gksenon.sleepdiary.viewmodels.DiaryEvent
 import com.gksenon.sleepdiary.viewmodels.SleepDiaryViewModel
-import com.gksenon.sleepdiary.viewmodels.SleepState
 import java.text.SimpleDateFormat
 import java.util.Locale
 import java.util.UUID
@@ -72,81 +71,99 @@ fun SleepDiaryScreen(
                             contentDescription = stringResource(R.string.track_sleep)
                         )
                     },
-                    onClick = { onNavigateToSleepTracking() })
+                    onClick = { onNavigateToSleepTracking() },
+                    containerColor = MaterialTheme.colorScheme.secondaryContainer,
+                    contentColor = MaterialTheme.colorScheme.onSecondaryContainer)
             }
         }) { contentPadding ->
 
-        val sleepDiary: Map<String, List<SleepState>> by viewModel.sleepDiary.collectAsState(
-            emptyMap()
-        )
+        val sleepDiary: List<Day> by viewModel.sleepDiary.collectAsState(emptyList())
 
         LazyColumn(contentPadding = contentPadding) {
-            sleepDiary.forEach { entry ->
-                item {
-                    Text(
-                        text = entry.key,
-                        style = MaterialTheme.typography.titleLarge,
-                        modifier = Modifier.padding(vertical = 8.dp, horizontal = 16.dp)
-                    )
-                }
-                items(
-                    items = entry.value,
-                    key = { sleep -> sleep.id },
-                    itemContent = { sleep ->
-                        SleepDiaryEntry(
-                            sleep = sleep,
-                            onClick = { onSleepClicked(sleep.id) }
-                        )
-                    })
-            }
+            items(items = sleepDiary, itemContent = { day -> Day(day, onSleepClicked) })
         }
     }
 }
 
 @Composable
-fun SleepDiaryEntry(
-    sleep: SleepState,
-    onClick: () -> Unit
+fun Day(
+    day: Day,
+    onSleepClicked: (UUID) -> Unit
 ) {
-    val dateFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-    val start = dateFormat.format(sleep.start)
-    val end = dateFormat.format(sleep.end)
-
-    Column {
-        Row(
-            modifier = Modifier
-                .height(64.dp)
-                .padding(horizontal = 32.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
+    val dateFormat = SimpleDateFormat("dd.MM", Locale.getDefault())
+    Box {
+        Column {
             Box(
                 modifier = Modifier
-                    .width(2.dp)
-                    .fillMaxHeight()
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .background(MaterialTheme.colorScheme.outline)
+                    .fillMaxWidth()
+                    .height(1.dp)
             )
-            Text(
-                text = stringResource(
-                    R.string.wake_time,
-                    sleep.wakeDuration.inWholeHours,
-                    sleep.wakeDuration.inWholeMinutes % 60
-                ),
-                modifier = Modifier.padding(8.dp)
-            )
+            day.events.forEach { event ->
+                when (event) {
+                    is DiaryEvent.Awake -> AwakeEvent(event)
+                    is DiaryEvent.SleepFinished -> SleepFinishedEvent(event, onSleepClicked)
+                    is DiaryEvent.SleepStarted -> SleepStartedEvent(event, onSleepClicked)
+                }
+            }
         }
         Text(
-            text = stringResource(
-                R.string.sleep_time_range,
-                start,
-                end,
-                sleep.sleepDuration.inWholeHours,
-                sleep.sleepDuration.inWholeMinutes % 60
-            ),
+            text = dateFormat.format(day.date),
             fontSize = 18.sp,
+            color = MaterialTheme.colorScheme.onSecondaryContainer,
             modifier = Modifier
-                .padding(horizontal = 16.dp, vertical = 8.dp)
-                .fillMaxWidth()
-                .clickable(onClick = onClick)
+                .align(Alignment.TopStart)
+                .padding(top = 1.dp)
+                .background(color = MaterialTheme.colorScheme.secondaryContainer, shape = RoundedCornerShape(4.dp))
+                .padding(12.dp)
         )
     }
+}
+
+@Composable
+fun AwakeEvent(event: DiaryEvent.Awake) {
+    Text(
+        text = stringResource(id = R.string.awake, event.duration.inWholeHours, event.duration.inWholeMinutes % 60),
+        fontSize = 18.sp,
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 80.dp, top = 12.dp, end = 12.dp, bottom = 12.dp)
+    )
+}
+
+@Composable
+fun SleepFinishedEvent(
+    event: DiaryEvent.SleepFinished,
+    onSleepClicked: (UUID) -> Unit
+) {
+    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    Text(
+        text = stringResource(
+            id = R.string.sleep_finished,
+            timeFormat.format(event.date), event.duration.inWholeHours, event.duration.inWholeMinutes % 60
+        ),
+        fontSize = 18.sp,
+        modifier = Modifier
+            .clickable { onSleepClicked(event.sleepId) }
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .padding(start = 80.dp, top = 12.dp, end = 12.dp, bottom = 12.dp)
+    )
+}
+
+@Composable
+fun SleepStartedEvent(
+    event: DiaryEvent.SleepStarted,
+    onSleepClicked: (UUID) -> Unit
+) {
+    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    Text(
+        text = stringResource(id = R.string.sleep_started, timeFormat.format(event.date)),
+        fontSize = 18.sp,
+        modifier = Modifier
+            .clickable { onSleepClicked(event.sleepId) }
+            .fillMaxWidth()
+            .background(MaterialTheme.colorScheme.primaryContainer)
+            .padding(start = 80.dp, top = 12.dp, end = 12.dp, bottom = 12.dp)
+    )
 }

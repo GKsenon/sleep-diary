@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="app_name">Дневник сна</string>
-    <string name="sleep_time_range">%s - %s, %dч %dмин сна</string>
-    <string name="wake_time">%dч %dмин бодрствования</string>
+    <string name="awake">Бодрствование %dh %dm</string>
+    <string name="sleep_finished">%s проснулся, спал %dh %dm</string>
+    <string name="sleep_started">%s уснул</string>
     <string name="add_sleep">Добавить запись</string>
     <string name="track_sleep">Отследить сон</string>
     <string name="start_date">Дата начала</string>
