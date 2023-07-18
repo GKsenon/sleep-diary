@@ -2,8 +2,9 @@
 <resources>
     <string name="app_name">Дневник сна</string>
     <string name="awake">Бодрствование %dh %dm</string>
-    <string name="sleep_finished">%s проснулся, спал %dh %dm</string>
-    <string name="sleep_started">%s уснул</string>
+    <string name="sleep_finished">%s подъем, спал %dh %dm</string>
+    <string name="sleep_started">%s отбой</string>
+    <string name="delete_sleep">Удалить запить</string>
     <string name="add_sleep">Добавить запись</string>
     <string name="track_sleep">Отследить сон</string>
     <string name="start_date">Дата начала</string>

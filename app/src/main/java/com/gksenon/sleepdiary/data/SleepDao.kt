@@ -16,6 +16,9 @@ interface SleepDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     fun saveSleep(sleep: Sleep)
 
+    @Query("DELETE FROM sleep WHERE sleep.id = :sleepId")
+    fun deleteSleep(sleepId: UUID)
+
     @Query("SELECT * FROM sleep WHERE sleep.id = :sleepId")
     fun getSleep(sleepId: UUID): Flow<Sleep>
 }

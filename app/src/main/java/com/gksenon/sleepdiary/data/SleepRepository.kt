@@ -23,6 +23,8 @@ class SleepRepository(private val context: Context, private val sleepDao: SleepD
 
     suspend fun saveSleep(sleep: Sleep) = withContext(Dispatchers.IO) { sleepDao.saveSleep(sleep) }
 
+    suspend fun deleteSleep(sleepId: UUID) = withContext(Dispatchers.IO) { sleepDao.deleteSleep(sleepId) }
+
     suspend fun startTracking() {
         context.dataStore.edit { trackerData ->
             val currentDate = Date()
