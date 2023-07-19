@@ -40,15 +40,6 @@ class SleepTrackerViewModel @Inject constructor(
     private var _state: MutableStateFlow<TrackerState> = MutableStateFlow(TrackerState.Stopped)
     val state = _state.asStateFlow()
 
-    private var tickerFlow: Flow<Unit> = flow {
-        delay(1.seconds)
-        while (true) {
-            emit(Unit)
-            delay(1.seconds)
-        }
-    }
-    private var tickerJob: Job? = null
-
     init {
         sleepRepository.observeTracker()
             .onEach { trackerEvent ->
@@ -186,33 +177,17 @@ class SleepTrackerViewModel @Inject constructor(
 
     private fun onTrackerStarted(start: Date) {
         _state.update {
-            val currentTimestamp = Date().time
-            val trackerDuration = (currentTimestamp - start.time).milliseconds
             TrackerState.Tracking(
                 startDate = start,
-                duration = trackerDuration,
                 formattedStartDate = dateFormatter.format(start),
                 formattedStartTime = timeFormatter.format(start)
             )
         }
 
         notificationManager.showNotification(start)
-
-        tickerJob?.cancel()
-        tickerJob = tickerFlow.onEach {
-            _state.update { currentState ->
-                if (currentState is TrackerState.Tracking) {
-                    val duration = currentState.duration + 1.seconds
-                    currentState.copy(duration = duration)
-                } else {
-                    currentState
-                }
-            }
-        }.launchIn(viewModelScope)
     }
 
     private fun onTrackerStopped() {
-        tickerJob?.cancel()
         _state.update { TrackerState.Stopped }
         notificationManager.hideNotification()
     }
@@ -234,7 +209,6 @@ sealed class TrackerState {
 
     data class Tracking(
         val startDate: Date,
-        val duration: Duration,
         val formattedStartDate: String,
         val formattedStartTime: String,
         val isStartDateEditingEnabled: Boolean = false,

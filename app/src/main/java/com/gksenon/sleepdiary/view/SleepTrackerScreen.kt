@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.gksenon.sleepdiary.R
+import com.gksenon.sleepdiary.view.utils.Chronometer
 import com.gksenon.sleepdiary.view.utils.DateVisualTransformation
 import com.gksenon.sleepdiary.view.utils.TimeVisualTransformation
 import com.gksenon.sleepdiary.viewmodels.SleepTrackerViewModel
@@ -105,12 +106,7 @@ fun TrackingScreen(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.padding(16.dp)
     ) {
-        state.duration.toComponents { hours, minutes, seconds, _ ->
-            Text(
-                text = "%02d : %02d : %02d".format(hours, minutes, seconds),
-                fontSize = 32.sp
-            )
-        }
+        Chronometer(base = state.startDate.time)
         ElevatedButton(
             onClick = onStop,
             modifier = Modifier
