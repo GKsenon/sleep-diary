@@ -13,6 +13,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material.icons.outlined.Check
 import androidx.compose.material.icons.outlined.Edit
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.ElevatedButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -21,6 +23,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -37,7 +40,12 @@ import com.gksenon.sleepdiary.view.utils.DateVisualTransformation
 import com.gksenon.sleepdiary.view.utils.TimeVisualTransformation
 import com.gksenon.sleepdiary.viewmodels.SleepTrackerViewModel
 import com.gksenon.sleepdiary.viewmodels.TrackerState
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.google.accompanist.permissions.shouldShowRationale
 
+@OptIn(ExperimentalPermissionsApi::class)
 @Composable
 fun SleepTrackerScreen(
     viewModel: SleepTrackerViewModel = hiltViewModel()
@@ -66,6 +74,20 @@ fun SleepTrackerScreen(
                     onStartTimeChanged = { viewModel.onStartTimeChanged(it) },
                     onSaveStartTime = { viewModel.saveStartTime() }
                 )
+            }
+
+            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.TIRAMISU) {
+                val notificationPermissionState =
+                    rememberPermissionState(permission = android.Manifest.permission.POST_NOTIFICATIONS)
+                if (!notificationPermissionState.status.isGranted) {
+                    if (notificationPermissionState.status.shouldShowRationale) {
+                        NotificationPermissionRationale { notificationPermissionState.launchPermissionRequest() }
+                    } else {
+                        LaunchedEffect(notificationPermissionState) {
+                            notificationPermissionState.launchPermissionRequest()
+                        }
+                    }
+                }
             }
         }
     }
@@ -210,4 +232,23 @@ fun TrackingScreen(
             )
         }
     }
+}
+
+@Composable
+fun NotificationPermissionRationale(onConfirm: () -> Unit) {
+    AlertDialog(
+        onDismissRequest = {},
+        title = { Text(text = stringResource(id = R.string.notification_permission)) },
+        text = { Text(text = stringResource(id = R.string.notification_permission_rationale)) },
+        confirmButton = {
+            Button(onClick = onConfirm) {
+                Text(text = stringResource(id = android.R.string.ok))
+            }
+        },
+        dismissButton = {
+            Button(onClick = {}) {
+                Text(text = stringResource(id = android.R.string.cancel))
+            }
+        }
+    )
 }
