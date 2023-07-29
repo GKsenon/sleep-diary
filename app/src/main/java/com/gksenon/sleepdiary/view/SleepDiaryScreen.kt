@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
@@ -80,11 +81,12 @@ fun SleepDiaryScreen(
         val sleepDiary: List<Day> by viewModel.sleepDiary.collectAsState(emptyList())
 
         LazyColumn(contentPadding = contentPadding) {
-            items(
+            itemsIndexed(
                 items = sleepDiary,
-                itemContent = { day ->
+                itemContent = { index, day ->
                     Day(
                         day = day,
+                        isLast = index == 0,
                         onSleepClicked = onSleepClicked
                     )
                 }
@@ -96,17 +98,20 @@ fun SleepDiaryScreen(
 @Composable
 fun Day(
     day: Day,
+    isLast: Boolean,
     onSleepClicked: (UUID) -> Unit
 ) {
     val dateFormat = SimpleDateFormat("dd.MM", Locale.getDefault())
     Box {
         Column {
-            Box(
-                modifier = Modifier
-                    .background(MaterialTheme.colorScheme.outline)
-                    .fillMaxWidth()
-                    .height(1.dp)
-            )
+            if (!isLast) {
+                Box(
+                    modifier = Modifier
+                        .background(MaterialTheme.colorScheme.outline)
+                        .fillMaxWidth()
+                        .height(1.dp)
+                )
+            }
             day.events.forEach { event ->
                 when (event) {
                     is DiaryEvent.Awake -> AwakeEvent(event)
