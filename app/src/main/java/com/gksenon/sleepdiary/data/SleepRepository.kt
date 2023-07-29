@@ -19,7 +19,7 @@ class SleepRepository(private val context: Context, private val sleepDao: SleepD
 
     fun getSleepDiary(): Flow<List<Sleep>> = sleepDao.getSleepDiary()
 
-    fun getSleep(sleepId: UUID): Flow<Sleep> = sleepDao.getSleep(sleepId)
+    fun getSleep(sleepId: UUID): Flow<Sleep?> = sleepDao.getSleep(sleepId)
 
     suspend fun saveSleep(sleep: Sleep) = withContext(Dispatchers.IO) { sleepDao.saveSleep(sleep) }
 

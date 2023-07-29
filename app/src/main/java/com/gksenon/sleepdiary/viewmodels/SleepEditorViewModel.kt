@@ -32,51 +32,53 @@ class SleepEditorViewModel @Inject constructor(
     private val timeFormatter = SimpleDateFormat("HHmm", Locale.getDefault())
         .apply { isLenient = false }
 
-    private val _sleepEditorState = MutableStateFlow(
-        SleepEditorState(
-            startDateTextFieldState = TextFieldState(
-                value = dateFormatter.format(Date()),
-                validationStatus = ValidationStatus.VALID
-            ),
-            startTimeTextFieldState = TextFieldState(
-                value = timeFormatter.format(Date()),
-                validationStatus = ValidationStatus.VALID
-            ),
-            endDateTextFieldState = TextFieldState(
-                value = dateFormatter.format(Date()),
-                validationStatus = ValidationStatus.VALID
-            ),
-            endTimeTextFieldState = TextFieldState(
-                value = timeFormatter.format(Date()),
-                validationStatus = ValidationStatus.VALID
-            )
+    private val defaultState = SleepEditorState(
+        startDateTextFieldState = TextFieldState(
+            value = dateFormatter.format(Date()),
+            validationStatus = ValidationStatus.VALID
+        ),
+        startTimeTextFieldState = TextFieldState(
+            value = timeFormatter.format(Date()),
+            validationStatus = ValidationStatus.VALID
+        ),
+        endDateTextFieldState = TextFieldState(
+            value = dateFormatter.format(Date()),
+            validationStatus = ValidationStatus.VALID
+        ),
+        endTimeTextFieldState = TextFieldState(
+            value = timeFormatter.format(Date()),
+            validationStatus = ValidationStatus.VALID
         )
     )
+
+    private val _sleepEditorState = MutableStateFlow(defaultState)
     val sleepEditorState = _sleepEditorState.asStateFlow()
 
     init {
         val sleepId: String? = savedStateHandle["sleepId"]
         if (sleepId != null) {
             sleepRepository.getSleep(UUID.fromString(sleepId)).map { sleep ->
-                SleepEditorState(
-                    sleepId = sleep.id,
-                    startDateTextFieldState = TextFieldState(
-                        value = dateFormatter.format(sleep.start),
-                        validationStatus = ValidationStatus.VALID
-                    ),
-                    startTimeTextFieldState = TextFieldState(
-                        value = timeFormatter.format(sleep.start),
-                        validationStatus = ValidationStatus.VALID
-                    ),
-                    endDateTextFieldState = TextFieldState(
-                        value = dateFormatter.format(sleep.end),
-                        validationStatus = ValidationStatus.VALID
-                    ),
-                    endTimeTextFieldState = TextFieldState(
-                        value = timeFormatter.format(sleep.end),
-                        validationStatus = ValidationStatus.VALID
+                if (sleep != null)
+                    SleepEditorState(
+                        sleepId = sleep.id,
+                        startDateTextFieldState = TextFieldState(
+                            value = dateFormatter.format(sleep.start),
+                            validationStatus = ValidationStatus.VALID
+                        ),
+                        startTimeTextFieldState = TextFieldState(
+                            value = timeFormatter.format(sleep.start),
+                            validationStatus = ValidationStatus.VALID
+                        ),
+                        endDateTextFieldState = TextFieldState(
+                            value = dateFormatter.format(sleep.end),
+                            validationStatus = ValidationStatus.VALID
+                        ),
+                        endTimeTextFieldState = TextFieldState(
+                            value = timeFormatter.format(sleep.end),
+                            validationStatus = ValidationStatus.VALID
+                        )
                     )
-                )
+                else defaultState
             }.onEach { state ->
                 _sleepEditorState.update { state }
             }.launchIn(viewModelScope)
@@ -189,6 +191,15 @@ class SleepEditorViewModel @Inject constructor(
                     endDateTextFieldState = it.endDateTextFieldState.copy(validationStatus = endDateValidationStatus),
                     endTimeTextFieldState = it.endTimeTextFieldState.copy(validationStatus = endTimeValidationStatus)
                 )
+            }
+        }
+    }
+
+    fun deleteSleep(onDeleteSleep: () -> Unit) {
+        _sleepEditorState.value.sleepId?.let {
+            viewModelScope.launch {
+                sleepRepository.deleteSleep(it)
+                onDeleteSleep()
             }
         }
     }

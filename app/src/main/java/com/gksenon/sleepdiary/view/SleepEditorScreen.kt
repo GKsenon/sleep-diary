@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
@@ -30,7 +31,8 @@ import com.gksenon.sleepdiary.viewmodels.ValidationStatus
 @Composable
 fun SleepEditorScreen(
     viewModel: SleepEditorViewModel = hiltViewModel(),
-    onSaveSleep: () -> Unit
+    onSaveSleep: () -> Unit,
+    onDeleteSleep: () -> Unit
 ) {
     val state by viewModel.sleepEditorState.collectAsState()
 
@@ -38,8 +40,16 @@ fun SleepEditorScreen(
         TopAppBar(
             title = { Text(stringResource(R.string.add_sleep)) },
             actions = {
+                if(state.sleepId != null) {
+                    IconButton(onClick = { viewModel.deleteSleep(onDeleteSleep) }) {
+                        Icon(
+                            imageVector = Icons.Filled.Delete,
+                            contentDescription = stringResource(id = R.string.delete_sleep)
+                        )
+                    }
+                }
                 IconButton(onClick = { viewModel.saveSleep(onSaveSleep) }) {
-                    Icon(imageVector = Icons.Filled.Check, contentDescription = null)
+                    Icon(imageVector = Icons.Filled.Check, contentDescription = stringResource(id = R.string.save_sleep))
                 }
             })
     }) { contentPadding ->

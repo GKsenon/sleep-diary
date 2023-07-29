@@ -38,12 +38,21 @@ fun MainScreen(navController: NavHostController = rememberNavController()) {
             )
         }
         composable("sleepEditor") {
-            SleepEditorScreen(onSaveSleep = { navController.popBackStack() })
+            SleepEditorScreen(
+                onSaveSleep = { navController.popBackStack() },
+                onDeleteSleep = { navController.popBackStack() }
+            )
         }
         composable("sleepEditor/{sleepId}") {
-            SleepEditorScreen(onSaveSleep = { navController.popBackStack() })
+            SleepEditorScreen(
+                onSaveSleep = { navController.popBackStack() },
+                onDeleteSleep = { navController.popBackStack() }
+            )
         }
-        composable("sleepTracker", deepLinks = listOf(navDeepLink { uriPattern= "https://com.gksenon.sleepdiary/tracker" })) {
+        composable(
+            "sleepTracker",
+            deepLinks = listOf(navDeepLink { uriPattern = "https://com.gksenon.sleepdiary/tracker" })
+        ) {
             SleepTrackerScreen()
         }
     }

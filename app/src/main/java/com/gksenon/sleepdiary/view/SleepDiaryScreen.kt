@@ -5,8 +5,6 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,11 +13,9 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SmallFloatingActionButton
@@ -89,8 +85,7 @@ fun SleepDiaryScreen(
                 itemContent = { day ->
                     Day(
                         day = day,
-                        onSleepClicked = onSleepClicked,
-                        onDeleteSleep = { viewModel.deleteSleep(it) }
+                        onSleepClicked = onSleepClicked
                     )
                 }
             )
@@ -101,8 +96,7 @@ fun SleepDiaryScreen(
 @Composable
 fun Day(
     day: Day,
-    onSleepClicked: (UUID) -> Unit,
-    onDeleteSleep: (UUID) -> Unit
+    onSleepClicked: (UUID) -> Unit
 ) {
     val dateFormat = SimpleDateFormat("dd.MM", Locale.getDefault())
     Box {
@@ -116,7 +110,7 @@ fun Day(
             day.events.forEach { event ->
                 when (event) {
                     is DiaryEvent.Awake -> AwakeEvent(event)
-                    is DiaryEvent.SleepFinished -> SleepFinishedEvent(event, onSleepClicked, onDeleteSleep)
+                    is DiaryEvent.SleepFinished -> SleepFinishedEvent(event, onSleepClicked)
                     is DiaryEvent.SleepStarted -> SleepStartedEvent(event, onSleepClicked)
                 }
             }
@@ -148,34 +142,21 @@ fun AwakeEvent(event: DiaryEvent.Awake) {
 @Composable
 fun SleepFinishedEvent(
     event: DiaryEvent.SleepFinished,
-    onSleepClicked: (UUID) -> Unit,
-    onDeleteSleep: (UUID) -> Unit
+    onSleepClicked: (UUID) -> Unit
 ) {
-    Row(
+    val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
+    Text(
+        text = stringResource(
+            id = R.string.sleep_finished,
+            timeFormat.format(event.date), event.duration.inWholeHours, event.duration.inWholeMinutes % 60
+        ),
+        fontSize = 18.sp,
         modifier = Modifier
             .clickable { onSleepClicked(event.sleepId) }
             .fillMaxWidth()
             .background(MaterialTheme.colorScheme.primaryContainer)
-            .padding(start = 80.dp, top = 12.dp, end = 12.dp, bottom = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        val timeFormat = SimpleDateFormat("HH:mm", Locale.getDefault())
-        Text(
-            text = stringResource(
-                id = R.string.sleep_finished,
-                timeFormat.format(event.date), event.duration.inWholeHours, event.duration.inWholeMinutes % 60
-            ),
-            fontSize = 18.sp
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        IconButton(onClick = { onDeleteSleep(event.sleepId) }) {
-            Icon(
-                imageVector = Icons.Filled.Delete,
-                tint = MaterialTheme.colorScheme.onPrimaryContainer,
-                contentDescription = stringResource(id = R.string.delete_sleep)
-            )
-        }
-    }
+            .padding(start = 80.dp, top = 12.dp, end = 12.dp, bottom = 12.dp)
+    )
 }
 
 @Composable

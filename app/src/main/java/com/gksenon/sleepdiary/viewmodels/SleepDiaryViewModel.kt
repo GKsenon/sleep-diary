@@ -1,12 +1,10 @@
 package com.gksenon.sleepdiary.viewmodels
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.gksenon.sleepdiary.data.SleepRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.launch
 import java.util.Calendar
 import java.util.Date
 import java.util.UUID
@@ -44,10 +42,6 @@ class SleepDiaryViewModel @Inject constructor(private val sleepRepository: Sleep
                 }
             eventsMap.map { Day(Date(it.key), it.value) }
         }
-
-    fun deleteSleep(sleepId: UUID) {
-        viewModelScope.launch { sleepRepository.deleteSleep(sleepId) }
-    }
 
     private fun getDayTimestamp(date: Date): Long {
         val dateTimeCalendar = Calendar.getInstance().apply { time = date }
