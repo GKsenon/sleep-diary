@@ -3,8 +3,8 @@ package com.gksenon.sleepdiary.viewmodels
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gksenon.sleepdiary.data.Sleep
-import com.gksenon.sleepdiary.data.SleepRepository
+import com.gksenon.sleepdiary.domain.Diary
+import com.gksenon.sleepdiary.domain.Sleep
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,7 +24,7 @@ import javax.inject.Inject
 @HiltViewModel
 class SleepEditorViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
-    private val sleepRepository: SleepRepository
+    private val diary: Diary
 ) : ViewModel() {
 
     private val dateFormatter = SimpleDateFormat("ddMMyyyy", Locale.getDefault())
@@ -57,7 +57,7 @@ class SleepEditorViewModel @Inject constructor(
     init {
         val sleepId: String? = savedStateHandle["sleepId"]
         if (sleepId != null) {
-            sleepRepository.getSleep(UUID.fromString(sleepId)).map { sleep ->
+            diary.getSleep(UUID.fromString(sleepId)).map { sleep ->
                 if (sleep != null)
                     SleepEditorState(
                         sleepId = sleep.id,
@@ -180,7 +180,7 @@ class SleepEditorViewModel @Inject constructor(
                     start = merge(startDate!!, startTime!!),
                     end = merge(endDate!!, endTime!!)
                 )
-                sleepRepository.saveSleep(sleep)
+                diary.saveSleep(sleep)
             }
             onSaveSleep()
         } else {
@@ -198,7 +198,7 @@ class SleepEditorViewModel @Inject constructor(
     fun deleteSleep(onDeleteSleep: () -> Unit) {
         _sleepEditorState.value.sleepId?.let {
             viewModelScope.launch {
-                sleepRepository.deleteSleep(it)
+                diary.deleteSleep(it)
                 onDeleteSleep()
             }
         }

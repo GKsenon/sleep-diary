@@ -2,15 +2,11 @@ package com.gksenon.sleepdiary.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.gksenon.sleepdiary.data.SleepRepository
+import com.gksenon.sleepdiary.domain.Tracker
 import com.gksenon.sleepdiary.notifications.SleepTrackerNotificationManager
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.Job
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
@@ -21,13 +17,10 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import javax.inject.Inject
-import kotlin.time.Duration
-import kotlin.time.Duration.Companion.milliseconds
-import kotlin.time.Duration.Companion.seconds
 
 @HiltViewModel
 class SleepTrackerViewModel @Inject constructor(
-    private val sleepRepository: SleepRepository,
+    private val tracker: Tracker,
     private val notificationManager: SleepTrackerNotificationManager
 ) :
     ViewModel() {
@@ -41,22 +34,22 @@ class SleepTrackerViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
     init {
-        sleepRepository.observeTracker()
+        tracker.observe()
             .onEach { trackerEvent ->
                 when (trackerEvent) {
-                    is SleepRepository.TrackerEvent.Started -> onTrackerStarted(trackerEvent.start)
-                    is SleepRepository.TrackerEvent.Stopped -> onTrackerStopped()
+                    is Tracker.Event.Started -> onTrackerStarted(trackerEvent.start)
+                    is Tracker.Event.Stopped -> onTrackerStopped()
                 }
             }
             .launchIn(viewModelScope)
     }
 
     fun startTracking() {
-        viewModelScope.launch { sleepRepository.startTracking() }
+        viewModelScope.launch { tracker.start() }
     }
 
     fun stopTracking() {
-        viewModelScope.launch { sleepRepository.stopTracking() }
+        viewModelScope.launch { tracker.stop() }
     }
 
     fun editStartDate() {
@@ -102,7 +95,7 @@ class SleepTrackerViewModel @Inject constructor(
                         currentState.copy(showStartDateInFutureError = true)
                     } else {
                         viewModelScope.launch {
-                            sleepRepository.updateTrackerStart(newStartCalendar.time)
+                            tracker.updateStartTime(newStartCalendar.time)
                         }
                         currentState.copy(isStartDateEditingEnabled = false)
                     }
@@ -162,7 +155,7 @@ class SleepTrackerViewModel @Inject constructor(
                         currentState.copy(showStartTimeInFutureError = true)
                     } else {
                         viewModelScope.launch {
-                            sleepRepository.updateTrackerStart(newStartTimeCalendar.time)
+                            tracker.updateStartTime(newStartTimeCalendar.time)
                         }
                         currentState.copy(isStartTimeEditingEnabled = false)
                     }

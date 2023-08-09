@@ -1,9 +1,9 @@
 package com.gksenon.sleepdiary.data
 
 import androidx.room.TypeConverter
-import java.util.*
+import java.util.Date
 
-class TimeConverter {
+internal class TimeConverter {
 
     @TypeConverter
     fun fromTimestamp(timestamp: Long): Date = Date(timestamp)

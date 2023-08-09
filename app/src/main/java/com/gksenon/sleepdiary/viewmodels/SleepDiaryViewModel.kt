@@ -1,7 +1,7 @@
 package com.gksenon.sleepdiary.viewmodels
 
 import androidx.lifecycle.ViewModel
-import com.gksenon.sleepdiary.data.SleepRepository
+import com.gksenon.sleepdiary.domain.Diary
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -13,10 +13,10 @@ import kotlin.time.Duration
 import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
-class SleepDiaryViewModel @Inject constructor(private val sleepRepository: SleepRepository) :
+class SleepDiaryViewModel @Inject constructor(diary: Diary) :
     ViewModel() {
 
-    val sleepDiary: Flow<List<Day>> = sleepRepository.getSleepDiary()
+    val sleepDiary: Flow<List<Day>> = diary.getSleepDiary()
         .map { sleepDiary ->
             val eventsMap = mutableMapOf<Long, MutableList<DiaryEvent>>()
             sleepDiary.sortedByDescending { it.start }
