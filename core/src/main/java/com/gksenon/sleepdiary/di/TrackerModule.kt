@@ -1,7 +1,7 @@
 package com.gksenon.sleepdiary.di
 
 import android.content.Context
-import com.gksenon.sleepdiary.data.DataStoreTracker
+import com.gksenon.sleepdiary.data.DataStoreTrackerGateway
 import com.gksenon.sleepdiary.domain.Diary
 import com.gksenon.sleepdiary.domain.Tracker
 import dagger.Module
@@ -17,5 +17,8 @@ class TrackerModule {
 
     @Provides
     @Singleton
-    fun provideTracker(diary: Diary, @ApplicationContext context: Context): Tracker = DataStoreTracker(diary, context)
+    fun provideTracker(diary: Diary, @ApplicationContext context: Context): Tracker {
+        val gateway = DataStoreTrackerGateway(context)
+        return Tracker(diary, gateway)
+    }
 }
