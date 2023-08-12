@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'com.gksenon.sleepdiary.wear'
+    namespace 'com.gksenon.sleepdiary'
     compileSdk 34
 
     defaultConfig {
-        applicationId "com.gksenon.sleepdiary.wear"
+        applicationId "com.gksenon.sleepdiary"
         minSdk 26
         targetSdk 33
         versionCode 1

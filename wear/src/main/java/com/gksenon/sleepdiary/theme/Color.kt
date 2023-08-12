@@ -1,4 +1,4 @@
-package com.gksenon.sleepdiary.wear.presentation.theme
+package com.gksenon.sleepdiary.theme
 
 import androidx.compose.ui.graphics.Color
 import androidx.wear.compose.material.Colors

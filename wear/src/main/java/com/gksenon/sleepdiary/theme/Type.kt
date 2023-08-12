@@ -1,4 +1,4 @@
-package com.gksenon.sleepdiary.wear.presentation.theme
+package com.gksenon.sleepdiary.theme
 
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
