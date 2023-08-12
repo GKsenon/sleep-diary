@@ -13,6 +13,6 @@ dependencyResolutionManagement {
     }
 }
 rootProject.name = "Sleep Diary"
-include ':app'
+include ':mobile'
 include ':core'
 include ':wear'
