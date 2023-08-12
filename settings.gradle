@@ -15,3 +15,4 @@ dependencyResolutionManagement {
 rootProject.name = "Sleep Diary"
 include ':app'
 include ':core'
+include ':wear'

@@ -7,7 +7,7 @@ plugins {
 
 android {
     namespace 'com.gksenon.sleepdiary'
-    compileSdk 33
+    compileSdk 34
 
     defaultConfig {
         minSdk 21
@@ -33,9 +33,6 @@ android {
 }
 
 dependencies {
-    def room_version = "2.5.2"
-    def hilt_version = "2.42"
-
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
     kapt "androidx.room:room-compiler:$room_version"
     implementation "com.google.dagger:hilt-android:$hilt_version"
