@@ -2,4 +2,6 @@
     <string name="app_name">Sleep Diary</string>
     <string name="time_asleep">Time asleep: %dh %dm</string>
     <string name="time_awake">Time awake: %dh %dm</string>
+    <string name="start_tracking">Start tracking</string>
+    <string name="stop_tracking">Stop tracking</string>
 </resources>
