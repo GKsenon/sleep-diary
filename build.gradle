@@ -8,7 +8,6 @@ buildscript {
         nav_version = "2.7.0"
         room_version = "2.5.2"
         wear_compose_version = '1.2.0'
-        horologist_version = '0.5.3'
     }
     dependencies {
         classpath 'com.google.dagger:hilt-android-gradle-plugin:2.43.2'
