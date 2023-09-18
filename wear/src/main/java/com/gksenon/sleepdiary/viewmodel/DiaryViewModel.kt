@@ -21,7 +21,9 @@ class DiaryViewModel @Inject constructor(diary: Diary) : ViewModel() {
         val entries = diary
             .filter { sleep ->
                 !sleep.start.toInstant().isBefore(midnight) || !sleep.end.toInstant().isBefore(midnight)
-            }.flatMapIndexed { index, sleep ->
+            }
+            .sortedBy { it.start }
+            .flatMapIndexed { index, sleep ->
                 if (index == 0) {
                     val list = mutableListOf<DiaryEntry>()
 
