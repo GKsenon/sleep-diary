@@ -14,11 +14,12 @@ import java.util.Date
 import java.util.UUID
 
 private const val CREATE_SLEEP_PATH = "/create"
+private const val UPDATE_SLEEP_PATH = "/update"
 private const val DELETE_SLEEP_PATH = "/delete"
 
 private const val SLEEP_ID_KEY = "ID"
-private const val SLEEP_START_KEY = "TYPE"
-private const val SLEEP_END_KEY = "TIMESTAMP"
+private const val SLEEP_START_KEY = "START"
+private const val SLEEP_END_KEY = "END"
 
 class SynchronizedDiary(
     private val diary: Diary,
@@ -31,6 +32,7 @@ class SynchronizedDiary(
             dataEvents.forEach { dataEvent ->
                 when(dataEvent.dataItem.uri.path) {
                     CREATE_SLEEP_PATH -> onCreateSleepDataEvent(dataEvent)
+                    UPDATE_SLEEP_PATH -> onUpdateSleepDataEvent(dataEvent)
                     DELETE_SLEEP_PATH -> onDeleteSleepDataEvent(dataEvent)
                 }
             }
@@ -55,7 +57,19 @@ class SynchronizedDiary(
         dataClient.putDataItem(sleepDataItem).await()
     }
 
-    override suspend fun updateSleep(sleep: Sleep) = diary.updateSleep(sleep)
+    override suspend fun updateSleep(sleep: Sleep) {
+        diary.updateSleep(sleep)
+
+        val updateSleepDataItem = PutDataMapRequest.create(UPDATE_SLEEP_PATH).apply {
+            dataMap.putString(SLEEP_ID_KEY, sleep.id.toString())
+            dataMap.putLong(SLEEP_START_KEY, sleep.start.time)
+            dataMap.putLong(SLEEP_END_KEY, sleep.end.time)
+        }
+            .asPutDataRequest()
+            .setUrgent()
+
+        dataClient.putDataItem(updateSleepDataItem).await()
+    }
 
     override suspend fun deleteSleep(id: UUID) {
         diary.deleteSleep(id)
@@ -76,6 +90,15 @@ class SynchronizedDiary(
         val end = Date(dataMap.getLong(SLEEP_END_KEY))
         val sleep = Sleep(id, start, end)
         coroutineScope.launch { diary.saveSleep(sleep) }
+    }
+
+    private fun onUpdateSleepDataEvent(dataEvent: DataEvent) {
+        val dataMap = DataMapItem.fromDataItem(dataEvent.dataItem).dataMap
+        val id = UUID.fromString(dataMap.getString(SLEEP_ID_KEY))
+        val start = Date(dataMap.getLong(SLEEP_START_KEY))
+        val end = Date(dataMap.getLong(SLEEP_END_KEY))
+        val sleep = Sleep(id, start, end)
+        coroutineScope.launch { diary.updateSleep(sleep) }
     }
 
     private fun onDeleteSleepDataEvent(dataEvent: DataEvent) {
