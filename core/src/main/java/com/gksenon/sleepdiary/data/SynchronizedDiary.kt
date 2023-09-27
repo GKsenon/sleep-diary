@@ -3,6 +3,7 @@ package com.gksenon.sleepdiary.data
 import com.gksenon.sleepdiary.domain.Diary
 import com.gksenon.sleepdiary.domain.Sleep
 import com.google.android.gms.wearable.DataClient
+import com.google.android.gms.wearable.DataEvent
 import com.google.android.gms.wearable.DataMapItem
 import com.google.android.gms.wearable.PutDataMapRequest
 import kotlinx.coroutines.CoroutineScope
@@ -11,6 +12,9 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.util.Date
 import java.util.UUID
+
+private const val CREATE_SLEEP_PATH = "/create"
+private const val DELETE_SLEEP_PATH = "/delete"
 
 private const val SLEEP_ID_KEY = "ID"
 private const val SLEEP_START_KEY = "TYPE"
@@ -25,12 +29,10 @@ class SynchronizedDiary(
     init {
         dataClient.addListener { dataEvents ->
             dataEvents.forEach { dataEvent ->
-                val dataMap = DataMapItem.fromDataItem(dataEvent.dataItem).dataMap
-                val id = UUID.fromString(dataMap.getString(SLEEP_ID_KEY))
-                val start = Date(dataMap.getLong(SLEEP_START_KEY))
-                val end = Date(dataMap.getLong(SLEEP_END_KEY))
-                val sleep = Sleep(id, start, end)
-                coroutineScope.launch { diary.saveSleep(sleep) }
+                when(dataEvent.dataItem.uri.path) {
+                    CREATE_SLEEP_PATH -> onCreateSleepDataEvent(dataEvent)
+                    DELETE_SLEEP_PATH -> onDeleteSleepDataEvent(dataEvent)
+                }
             }
         }
     }
@@ -42,7 +44,7 @@ class SynchronizedDiary(
     override suspend fun saveSleep(sleep: Sleep) {
         diary.saveSleep(sleep)
 
-        val sleepDataItem = PutDataMapRequest.create("/sleep").apply {
+        val sleepDataItem = PutDataMapRequest.create(CREATE_SLEEP_PATH).apply {
             dataMap.putString(SLEEP_ID_KEY, sleep.id.toString())
             dataMap.putLong(SLEEP_START_KEY, sleep.start.time)
             dataMap.putLong(SLEEP_END_KEY, sleep.end.time)
@@ -55,5 +57,30 @@ class SynchronizedDiary(
 
     override suspend fun updateSleep(sleep: Sleep) = diary.updateSleep(sleep)
 
-    override suspend fun deleteSleep(id: UUID) = diary.deleteSleep(id)
+    override suspend fun deleteSleep(id: UUID) {
+        diary.deleteSleep(id)
+
+        val deleteSleepDataItem = PutDataMapRequest.create(DELETE_SLEEP_PATH).apply {
+            dataMap.putString(SLEEP_ID_KEY, id.toString())
+        }
+            .asPutDataRequest()
+            .setUrgent()
+
+        dataClient.putDataItem(deleteSleepDataItem).await()
+    }
+
+    private fun onCreateSleepDataEvent(dataEvent: DataEvent) {
+        val dataMap = DataMapItem.fromDataItem(dataEvent.dataItem).dataMap
+        val id = UUID.fromString(dataMap.getString(SLEEP_ID_KEY))
+        val start = Date(dataMap.getLong(SLEEP_START_KEY))
+        val end = Date(dataMap.getLong(SLEEP_END_KEY))
+        val sleep = Sleep(id, start, end)
+        coroutineScope.launch { diary.saveSleep(sleep) }
+    }
+
+    private fun onDeleteSleepDataEvent(dataEvent: DataEvent) {
+        val dataMap = DataMapItem.fromDataItem(dataEvent.dataItem).dataMap
+        val id = UUID.fromString(dataMap.getString(SLEEP_ID_KEY))
+        coroutineScope.launch { diary.deleteSleep(id) }
+    }
 }
