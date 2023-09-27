@@ -21,7 +21,7 @@ private const val SLEEP_ID_KEY = "ID"
 private const val SLEEP_START_KEY = "START"
 private const val SLEEP_END_KEY = "END"
 
-class SynchronizedDiary(
+internal class SynchronizedDiary(
     private val diary: Diary,
     private val dataClient: DataClient,
     private val coroutineScope: CoroutineScope

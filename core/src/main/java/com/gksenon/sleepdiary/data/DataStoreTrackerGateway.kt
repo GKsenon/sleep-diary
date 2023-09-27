@@ -11,7 +11,7 @@ import java.util.Date
 
 private val Context.dataStore by preferencesDataStore(name = "sleep_tracker")
 
-class DataStoreTrackerGateway(private val context: Context) : Tracker.Gateway {
+internal class DataStoreTrackerGateway(private val context: Context) : Tracker.Gateway {
 
     private val startTimestampKey = longPreferencesKey(name = "start_timestamp")
 
