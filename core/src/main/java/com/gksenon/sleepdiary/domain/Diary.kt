@@ -9,9 +9,13 @@ interface Diary {
 
     fun getSleep(id: UUID): Flow<Sleep?>
 
-    suspend fun saveSleep(sleep: Sleep)
+    suspend fun saveSleep(sleep: Sleep): Result
 
-    suspend fun updateSleep(sleep: Sleep)
+    suspend fun updateSleep(sleep: Sleep): Result
 
     suspend fun deleteSleep(id: UUID)
+
+    enum class Result {
+        SUCCESS, CONFLICT
+    }
 }
