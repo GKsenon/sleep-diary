@@ -17,29 +17,29 @@ class SleepDiaryViewModel @Inject constructor(diary: Diary) :
     ViewModel() {
 
     val sleepDiary: Flow<List<Day>> = diary.getSleepDiary()
-        .map { sleepDiary ->
+        .map { diary -> diary.sortedByDescending { it.start } }
+        .map { diary ->
             val eventsMap = mutableMapOf<Long, MutableList<DiaryEvent>>()
-            sleepDiary.sortedByDescending { it.start }
-                .forEachIndexed { index, sleep ->
-                    val nextSleepStart = if (index == 0) Date() else sleepDiary[index - 1].start
-                    val awakeDuration = (nextSleepStart.time - sleep.end.time).milliseconds
-                    val awake = DiaryEvent.Awake(duration = awakeDuration)
+            diary.forEachIndexed { index, sleep ->
+                val nextSleepStart = if (index == 0) Date() else diary[index - 1].start
+                val awakeDuration = (nextSleepStart.time - sleep.end.time).milliseconds
+                val awake = DiaryEvent.Awake(duration = awakeDuration)
 
-                    val started = DiaryEvent.SleepStarted(sleepId = sleep.id, date = sleep.start)
+                val started = DiaryEvent.SleepStarted(sleepId = sleep.id, date = sleep.start)
 
-                    val sleepDuration = (sleep.end.time - sleep.start.time).milliseconds
-                    val finished = DiaryEvent.SleepFinished(
-                        sleepId = sleep.id,
-                        date = sleep.end,
-                        duration = sleepDuration
-                    )
+                val sleepDuration = (sleep.end.time - sleep.start.time).milliseconds
+                val finished = DiaryEvent.SleepFinished(
+                    sleepId = sleep.id,
+                    date = sleep.end,
+                    duration = sleepDuration
+                )
 
-                    with(eventsMap.getOrPut(getDayTimestamp(sleep.end)) { mutableListOf() }) {
-                        add(awake)
-                        add(finished)
-                    }
-                    with(eventsMap.getOrPut(getDayTimestamp(sleep.start)) { mutableListOf() }) { add(started) }
+                with(eventsMap.getOrPut(getDayTimestamp(sleep.end)) { mutableListOf() }) {
+                    add(awake)
+                    add(finished)
                 }
+                with(eventsMap.getOrPut(getDayTimestamp(sleep.start)) { mutableListOf() }) { add(started) }
+            }
             eventsMap.map { Day(Date(it.key), it.value) }
         }
 
